@@ -9,10 +9,13 @@ settings = {
     'number': True,
     'space': False,
     'length': 8,
+    'multi': 1,
 }
 
-PASSWORD_MAX_LEN = 4
-PASSWORD_MIN_LEN = 30
+PASSWORD_MIN_LEN = 4
+PASSWORD_MAX_LEN = 30
+MIN_MULTI = 1
+MAX_MULTI = 10
 
 
 def clear_screen():
@@ -48,12 +51,30 @@ def get_length_from_user(option, default, pw_min_len=PASSWORD_MIN_LEN, pw_max_le
         print('Please Enter numberic')
 
 
+def get_total_multiple_pw(option, default, min_multi=MIN_MULTI, max_multi=MAX_MULTI):
+    while True:
+        user_input = input(
+            f'(Default {option} is {default})- ''enter: set default *** enter a number ')
+
+        if user_input == '':
+            return default
+        if user_input.isdigit():
+            user_input = int(user_input)
+            if 1 <= user_input <= 10:
+                return user_input
+            print('Please Enter a number between 1 and 10  ')
+            continue
+        print("Please Enter a number.Please Try Again ")
+
+
 def get_setting_from_user(settings):
     for option, default in settings.items():
-        if option != 'length':
+        if option != 'length' and option != 'multi':
             settings[option] = get_yes_or_no_from_user(option, default)
-        else:
+        elif option == 'length':
             settings[option] = get_length_from_user(option, default)
+        elif option == 'multi':
+            settings[option] = get_total_multiple_pw(option, default)
 
 
 def ascii_upper_case():
@@ -86,22 +107,41 @@ def generat_password_char(choices):
         return ' '
 
 
+def generate_password_loop(settings):
+    while True:
+        generat_password(settings)
+
+        user_input = input(
+            'if you want generate passwords again (type-> y or press enter key) else: type-> n ')
+        if user_input in ['y', 'n', '']:
+            if user_input == 'y' or user_input == '':
+                continue
+            return
+        print('please choose (type-> y or press enter key else: type-> n) ')
+
+
 def generat_password(finall_settings):
-    finall_pw = ''
+    password_length = finall_settings['length']
+    password_multi = finall_settings['multi']
+    finall_pw = []
     choices = list(
         filter(lambda x: finall_settings[x] == True, finall_settings))
 
-    password_length = finall_settings['length']
-    for _ in range(password_length):
-        finall_pw += generat_password_char(choices)
-    print(f'generated password: {finall_pw}')
+    for _ in range(password_multi):
+        password = ''
+        for _ in range(password_length):
+            password += generat_password_char(choices)
+        finall_pw.append(password)
+    print('generatde passwords:')
+    for i, it in enumerate(finall_pw):
+        print(i+1, it)
 
 
 def main():
     clear_screen()
     get_setting_from_user(settings)
     print('-*-'*20)
-    generat_password(settings)
+    generate_password_loop(settings)
 
 
 main()
