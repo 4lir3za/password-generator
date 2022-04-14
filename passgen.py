@@ -62,9 +62,25 @@ def get_total_multiple_pw(option, default, min_multi=MIN_MULTI, max_multi=MAX_MU
             user_input = int(user_input)
             if 1 <= user_input <= 10:
                 return user_input
-            print('Please Enter a number between 1 and 10  ')
+            print(
+                f'Please Enter a number between {min_multi} and {max_multi}  ')
             continue
         print("Please Enter a number.Please Try Again ")
+
+
+def generate_password_with_default_settings(finall_settings):
+    while True:
+        user_input = input(
+            'Do you want generate password with default settings? (y: yes n: no enter: yes) ')
+        if user_input in ['y', 'n', '']:
+            if user_input == 'y' or user_input == '':
+                return generat_password(finall_settings)
+            else:
+                get_setting_from_user(settings)
+                print('-*-'*20)
+                return generate_password_loop(settings)
+                
+        print("Please choose(y: yes n: no enter: yes)")
 
 
 def get_setting_from_user(settings):
@@ -125,7 +141,7 @@ def generat_password(finall_settings):
     password_multi = finall_settings['multi']
     finall_pw = []
     choices = list(
-        filter(lambda x: finall_settings[x] == True, finall_settings))
+        filter(lambda x: finall_settings[x] == True, ['lower', 'upper', 'symbol', 'number', 'space']))
 
     for _ in range(password_multi):
         password = ''
@@ -139,9 +155,7 @@ def generat_password(finall_settings):
 
 def main():
     clear_screen()
-    get_setting_from_user(settings)
-    print('-*-'*20)
-    generate_password_loop(settings)
+    generate_password_with_default_settings(settings)
 
 
 main()
